@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <iostream>
+#include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
 
@@ -32,3 +33,6 @@ Room* rooms;
 
 void* cleaner(void *args);
 void* guest(void *args);
+
+int N, X, Y;
+sem_t *semp;

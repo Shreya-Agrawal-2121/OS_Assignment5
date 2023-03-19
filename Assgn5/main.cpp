@@ -3,7 +3,6 @@
 int main()
 {
 
-    int N, X, Y;
     cout<<"Enter N, X and Y respectively: ";
     cin>>N>>X>>Y;
     
@@ -33,8 +32,7 @@ int main()
     }
 
     //declare and initialise semaphores
-    sem_t semp;
-    sem_init(&semp, 0, N);
+    sem_init(semp, 0, N);
 
     for(int i=0; i<X+Y; i++){
         if(i<X){
@@ -44,6 +42,6 @@ int main()
             pthread_join(tguest[i-X], NULL);
         }
     }
-    sem_destroy(&semp);
+    sem_destroy(semp);
 
 }
