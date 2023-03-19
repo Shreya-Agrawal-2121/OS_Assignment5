@@ -29,6 +29,9 @@ typedef struct _cleaner{
 }Cleaner;
 
 Room* rooms;
-
+Guest *guests;
+sem_t semp;
+int N;
+int no_uncleaned = 0;
 void* cleaner(void *args);
 void* guest(void *args);
