@@ -10,6 +10,7 @@ using namespace std;
 typedef struct _stay{
     int guestid;
     int stay_time;
+    bool is_staying;
 }Stay;
 
 typedef struct _room{
