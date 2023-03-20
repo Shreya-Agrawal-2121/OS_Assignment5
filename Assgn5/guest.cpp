@@ -8,6 +8,7 @@ void *guest(void *args)
         if (guests[idx].room_no == -1)
         {
             int rand_sleep = rand() % 11 + 10;
+            cout<<"Guest "<<idx<<" sleeping for "<<rand_sleep<<" seconds\n";
             sleep(rand_sleep);
             int semp_value;
             sem_getvalue(&semp, &semp_value);
@@ -62,7 +63,7 @@ void *guest(void *args)
             {
                 for (i = 0; i < N; i++)
                 {
-                    if (rooms[i].num_guests_stayed == 0)
+                    if (rooms[i].num_guests_stayed == 1)
                     {
                         break;
                     }

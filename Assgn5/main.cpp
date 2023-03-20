@@ -10,7 +10,7 @@ int main()
     int  X, Y;
     cout<<"Enter N, X and Y respectively: ";
     cin>>N>>X>>Y;
-    
+    int guest_idx[Y];
     // allocate memory and initialise rooms
     rooms = (Room* )malloc(N*sizeof(Room));
     guests = (Guest *)malloc(Y*sizeof(Guest));
@@ -26,22 +26,22 @@ int main()
         guests[i].guestid = i;
         guests[i].priority = rand()%Y + 1;
         guests[i].room_no = -1;
+        guest_idx[i] = i;
     }
     //declare and create threads
     pthread_t tguest[Y], tcleaner[X];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
 
-    for(int i=0; i<X+Y; i++){
-        if(i<X){
+    for(int i=0; i<X; i++){
+        
             pthread_create(&tcleaner[i], &attr, cleaner, NULL);
-        }
-        else{
-            int idx = i - X;
-            pthread_create(&tguest[i-X], &attr, guest,  (void *)&idx);
-        }
+        
+       
     }
-
+    for(int i = 0; i < Y; i++){
+        pthread_create(&tguest[i],&attr,guest,&guest_idx[i]);
+    }
     //declare and initialise semaphores
     
     sem_init(&semp, 0, N);
