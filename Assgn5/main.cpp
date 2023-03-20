@@ -1,5 +1,9 @@
 #include "hotel.h"
-
+Room* rooms;
+Guest *guests;
+sem_t semp;
+int N;
+int no_uncleaned = 0;
 int main()
 {
 

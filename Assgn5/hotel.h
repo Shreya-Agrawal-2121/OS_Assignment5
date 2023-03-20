@@ -1,3 +1,5 @@
+#ifndef __HOTEL__H
+#define __HOTEL__H
 #include <bits/stdc++.h>
 #include <iostream>
 #include <pthread.h>
@@ -28,10 +30,12 @@ typedef struct _cleaner{
     int cleaning_dur;
 }Cleaner;
 
-Room* rooms;
-Guest *guests;
-sem_t semp;
-int N;
-int no_uncleaned = 0;
+extern Room* rooms;
+extern Guest *guests;
+extern sem_t semp;
+extern int N;
+extern int no_uncleaned;
 void* cleaner(void *args);
 void* guest(void *args);
+
+#endif
