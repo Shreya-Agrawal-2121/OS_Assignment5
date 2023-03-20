@@ -24,6 +24,7 @@ typedef struct _guest{
     int guestid;
     int room_no;
     int priority;
+    bool is_removed;
 }Guest;
 
 typedef struct _cleaner{

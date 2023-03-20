@@ -29,6 +29,7 @@ int main()
         guests[i].priority = rand() % Y + 1;
         guests[i].room_no = -1;
         guest_idx[i] = i;
+        guests[i].is_removed = false;
     }
     // declare and create threads
     pthread_t tguest[Y], tcleaner[X];
