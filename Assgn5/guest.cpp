@@ -46,7 +46,6 @@ void *guest(void *args)
                     if (guests[idx].room_no != -1)
                     {
                         guests[idx].room_no = -1;
-
                         sem_post(&semp);
                     }
                     continue;
