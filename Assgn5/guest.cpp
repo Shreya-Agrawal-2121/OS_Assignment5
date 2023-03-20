@@ -8,7 +8,7 @@ void *guest(void *args)
         if (guests[idx].room_no == -1)
         {
             int rand_sleep = rand() % 11 + 10;
-            cout<<"Guest "<<idx<<" sleeping for "<<rand_sleep<<" seconds\n";
+            cout << "Guest " << idx << " sleeping for " << rand_sleep << " seconds\n";
             sleep(rand_sleep);
             int semp_value;
             sem_getvalue(&semp, &semp_value);
@@ -34,10 +34,12 @@ void *guest(void *args)
                     rooms[i].guests_stayed[1].guestid = idx;
                     guests[g_id].room_no = -1;
                     guests[idx].room_no = i;
+                    cout << "Guest " << g_id << " removed from Room " << i <<  "\n";
+
                     int rand_stay = rand() % 21 + 10;
                     rooms[i].guests_stayed[1].stay_time = rand_stay;
                     rooms[i].num_guests_stayed++;
-                    cout << "Guest " << idx << " allotted to Room " << i << "\n";
+                    cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
                     sleep(rand_stay);
                     rooms[i].clean = false;
                     no_uncleaned++;
@@ -76,7 +78,7 @@ void *guest(void *args)
                 rooms[i].guests_stayed[rooms[i].num_guests_stayed].stay_time = rand_stay;
                 rooms[i].num_guests_stayed++;
                 guests[idx].room_no = i;
-                cout << "Guest " << idx << " allotted to Room " << i << "\n";
+                cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
                 sleep(rand_stay);
             }
             if (guests[idx].room_no != -1)
