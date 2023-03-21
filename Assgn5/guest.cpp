@@ -52,7 +52,7 @@ void *guest(void *args)
                     rooms[i].clean = false;
                     guests[idx].room_no = -1;
                     has_requested = false;
-
+                    cout << "Guest " << idx << " emptied Room " << i << "\n";
                     sem_post(&semp);
                     pthread_mutex_lock(&cond_mutex);
                     no_uncleaned++;
@@ -87,17 +87,20 @@ void *guest(void *args)
                     guests[idx].room_no = i;
                     cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
                     sleep(rand_stay);
+
                     if (guests[idx].room_no != -1)
                     {
 
-                        // cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
                         rooms[guests[idx].room_no].guests_stayed[0].is_staying = false;
+                        guests[idx].room_no = -1;
+
                         has_requested = false;
+                        cout << "Guest " << idx << " emptied Room " << i << "\n";
+
                         sem_post(&semp);
                     }
                     else
                         has_requested = true;
-                    guests[idx].room_no = -1;
                 }
                 else
                 {
@@ -121,7 +124,7 @@ void *guest(void *args)
                         rooms[i].clean = false;
                         guests[idx].room_no = -1;
                         has_requested = false;
-
+                        cout << "Guest " << idx << " emptied Room " << i << "\n";
                         sem_post(&semp);
                         pthread_mutex_lock(&cond_mutex);
                         no_uncleaned++;
