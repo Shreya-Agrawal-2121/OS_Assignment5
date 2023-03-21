@@ -1,7 +1,8 @@
 #include "hotel.h"
 Room *rooms;
 Guest *guests;
-sem_t semp;
+sem_t semp, semc;
+
 int N;
 int no_uncleaned = 0;
 int main()
@@ -31,22 +32,28 @@ int main()
         guest_idx[i] = i;
         guests[i].is_removed = false;
     }
+
+    // declare and initialise semaphores
+
+    sem_init(&semp, 0, N);
+    sem_init(&semc, 1, 1);
+
     // declare and create threads
     pthread_t tguest[Y], tcleaner[X];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
 
+    // pthread_cond_init(&clean_cond, NULL);
+    // pthread_mutex_init(&cond_mutex, NULL);
+
     for (int i = 0; i < X; i++)
     {
-        pthread_create(&tcleaner[i], &attr, cleaner, NULL);
+        pthread_create(&tcleaner[i], &attr, cleaner, &i);
     }
     for (int i = 0; i < Y; i++)
     {
         pthread_create(&tguest[i], &attr, guest, &guest_idx[i]);
     }
-    // declare and initialise semaphores
-
-    sem_init(&semp, 0, N);
 
     for (int i = 0; i < X + Y; i++)
     {
