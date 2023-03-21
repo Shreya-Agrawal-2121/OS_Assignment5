@@ -34,14 +34,14 @@ void *cleaner(void *args)
 
             // mark room as clean
             curr_room->clean = true;
-           /* curr_room->num_guests_stayed = 0;
+           curr_room->num_guests_stayed = 0;
             curr_room->guests_stayed[0].guestid = -1;
             curr_room->guests_stayed[0].is_staying = false;
             curr_room->guests_stayed[0].stay_time = -1;
 
             curr_room->guests_stayed[1].guestid = -1;
             curr_room->guests_stayed[1].is_staying = false;
-            curr_room->guests_stayed[1].stay_time = -1;*/
+            curr_room->guests_stayed[1].stay_time = -1;
         }
     }
 
