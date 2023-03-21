@@ -55,7 +55,7 @@ void *guest(void *args)
                     {
                         //cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
                         guests[idx].room_no = -1;
-                        // sem_post(&semp);
+                        sem_post(&semp);
                         has_requested = false;
                     }
                     else
