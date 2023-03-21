@@ -34,10 +34,13 @@ typedef struct _cleaner{
 
 extern Room* rooms;
 extern Guest *guests;
-extern sem_t semp;
+extern sem_t semp, semc;
 extern int N;
 extern int no_uncleaned;
 void* cleaner(void *args);
 void* guest(void *args);
+
+// extern pthread_cond_t clean_cond;
+// extern pthread_mutex_t cond_mutex;
 
 #endif
