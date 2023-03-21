@@ -50,18 +50,19 @@ void *guest(void *args)
                     cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
                     sleep(rand_stay);
                     rooms[i].clean = false;
+                    guests[idx].room_no = -1;
+                    has_requested = false;
+
+                    sem_post(&semp);
+                    pthread_mutex_lock(&cond_mutex);
                     no_uncleaned++;
-                    if (guests[idx].room_no != -1)
+                    cout << "No of uncleaned rooms " << no_uncleaned << "\n";
+                    if (no_uncleaned == N)
                     {
-                        //cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
-                        guests[idx].room_no = -1;
-                        sem_post(&semp);
-                        has_requested = false;
+                        pthread_cond_broadcast(&clean_cond);
                     }
-                    else
-                    {
-                        has_requested = true;
-                    }
+                    pthread_mutex_unlock(&cond_mutex);
+
                     continue;
                 }
             }
@@ -69,41 +70,9 @@ void *guest(void *args)
             {
                 sem_wait(&semp);
                 int i = -1;
-            for (i = 0; i < N; i++)
-            {
-                if (rooms[i].num_guests_stayed == 0)
-                {
-                    break;
-                }
-            }
-            if (i < N)
-            {
-                rooms[i].guests_stayed[rooms[i].num_guests_stayed].guestid = idx;
-                int rand_stay = rand() % 21 + 10;
-                rooms[i].guests_stayed[rooms[i].num_guests_stayed].stay_time = rand_stay;
-                rooms[i].guests_stayed[rooms[i].num_guests_stayed].is_staying = true;
-                rooms[i].num_guests_stayed++;
-                guests[idx].room_no = i;
-                cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
-                sleep(rand_stay);
-                if (guests[idx].room_no != -1)
-                {
-
-                    // cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
-                    rooms[guests[idx].room_no].guests_stayed[0].is_staying = false;
-                    guests[idx].room_no = -1;
-                    has_requested = false;
-                    sem_post(&semp);
-                }
-                else
-                    has_requested = true;
-            }
-            else
-            {
-
                 for (i = 0; i < N; i++)
                 {
-                    if (rooms[i].num_guests_stayed == 1 && rooms[i].guests_stayed[0].is_staying == false)
+                    if (rooms[i].num_guests_stayed == 0)
                     {
                         break;
                     }
@@ -120,19 +89,59 @@ void *guest(void *args)
                     sleep(rand_stay);
                     if (guests[idx].room_no != -1)
                     {
-                        //cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
-                        guests[idx].room_no = -1;
+
+                        // cout << "Guest " << idx << " stayed in Room " << i << " for duration of " << rand_stay << "\n";
+                        rooms[guests[idx].room_no].guests_stayed[0].is_staying = false;
                         has_requested = false;
                         sem_post(&semp);
                     }
                     else
                         has_requested = true;
+                    guests[idx].room_no = -1;
                 }
                 else
                 {
-                    has_requested = true;
+                    for (i = 0; i < N; i++)
+                    {
+                        if (rooms[i].num_guests_stayed == 1 && rooms[i].guests_stayed[0].is_staying == false)
+                        {
+                            break;
+                        }
+                    }
+                    if (i < N)
+                    {
+                        rooms[i].guests_stayed[rooms[i].num_guests_stayed].guestid = idx;
+                        int rand_stay = rand() % 21 + 10;
+                        rooms[i].guests_stayed[rooms[i].num_guests_stayed].stay_time = rand_stay;
+                        rooms[i].guests_stayed[rooms[i].num_guests_stayed].is_staying = true;
+                        rooms[i].num_guests_stayed++;
+                        guests[idx].room_no = i;
+                        cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
+                        sleep(rand_stay);
+                        rooms[i].clean = false;
+                        guests[idx].room_no = -1;
+                        has_requested = false;
+
+                        sem_post(&semp);
+                        pthread_mutex_lock(&cond_mutex);
+                        no_uncleaned++;
+                        cout << "No of uncleaned rooms " << no_uncleaned << "\n";
+
+                        if (no_uncleaned == N)
+                            pthread_cond_broadcast(&clean_cond);
+                        pthread_mutex_unlock(&cond_mutex);
+                    }
+                    else
+                    {
+                        guests[idx].room_no = -1;
+
+                        has_requested = true;
+                    }
                 }
             }
+            else
+            {
+                guests[idx].room_no = -1;
             }
         }
     }

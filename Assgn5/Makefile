@@ -1,5 +1,5 @@
 shra: main.o guest.o cleaner.o
-	g++ main.o guest.o cleaner.o -o shra
+	g++ main.o guest.o cleaner.o -o shra -lpthread
 
 main.o: main.cpp hotel.h
 	g++ -std=c++14 -c main.cpp
