@@ -4,8 +4,10 @@ Guest *guests;
 sem_t semp,semc;
 int N;
 int no_uncleaned = 0;
-pthread_cond_t clean_cond;
-pthread_mutex_t cond_mutex;
+bool all_cleaned = true;
+bool all_uncleaned = false;
+pthread_cond_t clean_cond,unclean_cond;
+pthread_mutex_t cond_mutex,u_mutex;
 int main()
 {
 
@@ -52,6 +54,7 @@ int main()
     }
     // declare and initialise semaphores
     pthread_mutex_init(&cond_mutex,NULL);
+    pthread_mutex_init(&u_mutex,NULL);
     sem_init(&semp, 0, N);
     sem_init(&semc, 1, 1);
     for (int i = 0; i < X + Y; i++)

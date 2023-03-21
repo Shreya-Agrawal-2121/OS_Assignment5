@@ -9,7 +9,7 @@ void *cleaner(void *args)
     while (1)
     {
         pthread_mutex_lock(&cond_mutex);
-        while (no_uncleaned != N)
+        while (all_uncleaned == false)
             pthread_cond_wait(&clean_cond, &cond_mutex);
         pthread_mutex_unlock(&cond_mutex);
         while (1)
@@ -18,6 +18,12 @@ void *cleaner(void *args)
             sem_wait(&semc);
             if (!no_uncleaned)
             {
+                pthread_mutex_lock(&u_mutex);
+                all_cleaned = true;
+                all_uncleaned = false;
+                pthread_cond_broadcast(&unclean_cond);
+                pthread_mutex_unlock(&u_mutex);
+
                 sem_post(&semc);
                 break;
             }
@@ -34,7 +40,7 @@ void *cleaner(void *args)
 
             // mark room as clean
             curr_room->clean = true;
-           curr_room->num_guests_stayed = 0;
+            curr_room->num_guests_stayed = 0;
             curr_room->guests_stayed[0].guestid = -1;
             curr_room->guests_stayed[0].is_staying = false;
             curr_room->guests_stayed[0].stay_time = -1;
