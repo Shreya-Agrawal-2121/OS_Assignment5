@@ -12,23 +12,21 @@ void *cleaner(void *args)
         while (all_uncleaned == false)
             pthread_cond_wait(&clean_cond, &cond_mutex);
         pthread_mutex_unlock(&cond_mutex);
-        while (1)
-        {
             // assign a dirty room
-            sem_wait(&semc);
+            pthread_mutex_lock(&cond_mutex);
             if (!no_uncleaned)
             {
-                pthread_mutex_lock(&u_mutex);
+                
                 all_cleaned = true;
                 all_uncleaned = false;
-                pthread_mutex_unlock(&u_mutex);
-
-                sem_post(&semc);
+                
+                no_uncleaned = 0;
+                pthread_mutex_unlock(&cond_mutex);
                 break;
             }
             int curr_roomid = no_uncleaned - 1;
             no_uncleaned--;
-            sem_post(&semc);
+            pthread_mutex_unlock(&cond_mutex);
 
             // clean
             cout << "Cleaner " << id << " is cleaning room " << curr_roomid << ". \n";
@@ -47,7 +45,7 @@ void *cleaner(void *args)
             curr_room->guests_stayed[1].guestid = -1;
             curr_room->guests_stayed[1].is_staying = false;
             curr_room->guests_stayed[1].stay_time = -1;
-        }
+        //}
     }
 
     pthread_exit(0);

@@ -7,6 +7,7 @@ void *guest(void *args)
     {
         if (guests[idx].room_no == -1)
         {
+            bool is_last_guest = false;
             if (guests[idx].is_removed == true)
             {
                 guests[idx].is_removed = false;
@@ -19,12 +20,13 @@ void *guest(void *args)
             bool found = false;
             if (semp_value <= 0)
             {
-                pthread_mutex_lock(&u_mutex);
-                if(all_cleaned == false){
-                    pthread_mutex_unlock(&u_mutex);
+                pthread_mutex_lock(&cond_mutex);
+                if (all_cleaned == false)
+                {
+                    pthread_mutex_unlock(&cond_mutex);
                     continue;
                 }
-                pthread_mutex_unlock(&u_mutex);
+                pthread_mutex_unlock(&cond_mutex);
                 int i;
                 for (i = 0; i < N; i++)
                 {
@@ -53,11 +55,6 @@ void *guest(void *args)
                     rooms[i].guests_stayed[1].is_staying = true;
                     rooms[i].num_guests_stayed++;
                     cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
-                    sleep(rand_stay);
-                    rooms[i].clean = false;
-                    guests[idx].room_no = -1;
-
-                    cout << "Guest " << idx << " emptied Room " << i << "\n";
                     // sem_post(&semp);
                     pthread_mutex_lock(&cond_mutex);
                     no_uncleaned++;
@@ -66,22 +63,31 @@ void *guest(void *args)
                     {
                         all_uncleaned = true;
                         all_cleaned = false;
+                        is_last_guest = true;
                         pthread_cond_broadcast(&clean_cond);
                     }
                     pthread_mutex_unlock(&cond_mutex);
-
+                    if (!is_last_guest)
+                    {
+                        sleep(rand_stay);
+                    }
+                    
+                        rooms[i].clean = false;
+                        guests[idx].room_no = -1;
+                    
                     continue;
                 }
             }
 
             sem_wait(&semp);
-            pthread_mutex_lock(&u_mutex);
-                if(all_cleaned == false){
-                    pthread_mutex_unlock(&u_mutex);
-                    sem_post(&semp);
-                    continue;
-                }
-            pthread_mutex_unlock(&u_mutex);
+            pthread_mutex_lock(&cond_mutex);
+            if (all_cleaned == false)
+            {
+                pthread_mutex_unlock(&cond_mutex);
+                sem_post(&semp);
+                continue;
+            }
+            pthread_mutex_unlock(&cond_mutex);
             int i = -1;
             for (i = 0; i < N; i++)
             {
@@ -108,8 +114,6 @@ void *guest(void *args)
                     rooms[guests[idx].room_no].guests_stayed[0].is_staying = false;
                     guests[idx].room_no = -1;
 
-                    cout << "Guest " << idx << " emptied Room " << i << "\n";
-
                     sem_post(&semp);
                 }
                 else
@@ -120,6 +124,7 @@ void *guest(void *args)
             }
             else
             {
+                bool is_last_guest = false;
                 for (i = 0; i < N; i++)
                 {
                     if (rooms[i].num_guests_stayed == 1 && rooms[i].guests_stayed[0].is_staying == false)
@@ -136,12 +141,6 @@ void *guest(void *args)
                     rooms[i].num_guests_stayed++;
                     guests[idx].room_no = i;
                     cout << "Guest " << idx << " allotted to Room " << i << " for duration of " << rand_stay << "\n";
-                    sleep(rand_stay);
-                    rooms[i].clean = false;
-                    guests[idx].room_no = -1;
-
-                    cout << "Guest " << idx << " emptied Room " << i << "\n";
-                    sem_post(&semp);
                     pthread_mutex_lock(&cond_mutex);
                     no_uncleaned++;
                     cout << "No of uncleaned rooms " << no_uncleaned << "\n";
@@ -150,10 +149,16 @@ void *guest(void *args)
                     {
                         all_uncleaned = true;
                         all_cleaned = false;
-
+                        is_last_guest = true;
                         pthread_cond_broadcast(&clean_cond);
                     }
                     pthread_mutex_unlock(&cond_mutex);
+                    if(!is_last_guest){
+                        sleep(rand_stay);
+                    }
+                    rooms[i].clean = false;
+                    guests[idx].room_no = -1;
+                    sem_post(&semp);
                 }
                 else
                 {
