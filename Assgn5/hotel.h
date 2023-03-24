@@ -41,6 +41,6 @@ extern bool all_cleaned;
 extern bool all_uncleaned;
 void* cleaner(void *args);
 void* guest(void *args);
-extern pthread_cond_t clean_cond,unclean_cond;
+extern pthread_cond_t clean_cond;
 extern pthread_mutex_t cond_mutex,u_mutex;
 #endif

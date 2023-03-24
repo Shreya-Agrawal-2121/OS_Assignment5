@@ -21,7 +21,6 @@ void *cleaner(void *args)
                 pthread_mutex_lock(&u_mutex);
                 all_cleaned = true;
                 all_uncleaned = false;
-                pthread_cond_broadcast(&unclean_cond);
                 pthread_mutex_unlock(&u_mutex);
 
                 sem_post(&semc);

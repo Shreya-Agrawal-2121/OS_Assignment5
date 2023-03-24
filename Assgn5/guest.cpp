@@ -20,8 +20,10 @@ void *guest(void *args)
             if (semp_value <= 0)
             {
                 pthread_mutex_lock(&u_mutex);
-                while (all_cleaned == false)
-                    pthread_cond_wait(&unclean_cond, &u_mutex);
+                if(all_cleaned == false){
+                    pthread_mutex_unlock(&u_mutex);
+                    continue;
+                }
                 pthread_mutex_unlock(&u_mutex);
                 int i;
                 for (i = 0; i < N; i++)
@@ -74,8 +76,11 @@ void *guest(void *args)
 
             sem_wait(&semp);
             pthread_mutex_lock(&u_mutex);
-            while (all_cleaned == false)
-                pthread_cond_wait(&unclean_cond, &u_mutex);
+                if(all_cleaned == false){
+                    pthread_mutex_unlock(&u_mutex);
+                    sem_post(&semp);
+                    continue;
+                }
             pthread_mutex_unlock(&u_mutex);
             int i = -1;
             for (i = 0; i < N; i++)

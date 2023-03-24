@@ -6,7 +6,7 @@ int N;
 int no_uncleaned = 0;
 bool all_cleaned = true;
 bool all_uncleaned = false;
-pthread_cond_t clean_cond,unclean_cond;
+pthread_cond_t clean_cond;
 pthread_mutex_t cond_mutex,u_mutex;
 int main()
 {
